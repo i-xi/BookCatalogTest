@@ -6,7 +6,6 @@ public class Book {
     private String bookSummary;
     private String bookISBN;
     private String bookGenre;
-    private String bookId;
 
     public Book(String title, String name, String summary, String ISBN, String genre) {
         this.bookTitle = title;
@@ -31,6 +30,4 @@ public class Book {
     public String getGenre() {
         return bookGenre;
     }
-    public void setId(String bookId) { this.bookId = bookId; }
-    public String getId() { return bookId; }
 }

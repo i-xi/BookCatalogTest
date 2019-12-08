@@ -1,42 +1,18 @@
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.By;
-import org.openqa.selenium.*;
-import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.Select;
+import org.testng.ITestContext;
 import org.testng.Assert;
-import org.testng.annotations.AfterSuite;
-import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import ramatukogu.Book;
 
+public class AddBook extends TestBase {
 
-public class AddToCatalog {
-    WebDriver driver;
-    Book book;
-
-    @BeforeSuite
-    public void beforeSuite() {
-        driver = new ChromeDriver();
-        book = new Book(
-                "It",
-                "King, Stephen",
-                "The story follows the experiences of seven children as they are terrorized by an evil entity that exploits the fears of its victims to disguise itself while hunting its prey.",
-                "0-670-81302-8",
-                "Fiction"
-        );
-    }
-
-    @AfterSuite
-    public void afterSuite() {
-        driver.quit();
-    }
-
-    @Test
-    public void testForm() {
+    @Test(priority = 1, groups="AddBook.testForm")
+    public void testForm(ITestContext context) {
         driver.get("https://raamatukogu.herokuapp.com/catalog/book/create");
         setBookTitle(book.getTitle());
         selectAuthorByName(book.getAuthor());
@@ -54,19 +30,7 @@ public class AddToCatalog {
 
         // Save book Id on success
         String bookId = getBookId();
-        book.setId(bookId);
-    }
-
-    @Test(dependsOnMethods = "testForm")
-    public void testCatalog() {
-        driver.get("https://raamatukogu.herokuapp.com/catalog/books");
-        WebElement bookLink = driver.findElement(By.xpath("//a[contains(@href, '/catalog/book/" + book.getId() + "')]"));
-        String bookTitle = bookLink.getText();
-        String bookEntry = driver.findElement(By.xpath("//a[contains(@href, '/catalog/book/" + book.getId() + "')]/parent::*")).getText();
-        String authorName = bookEntry.substring(bookTitle.length() + 2, bookEntry.length() - 1);
-
-        Assert.assertEquals(bookTitle, book.getTitle());
-        Assert.assertEquals(authorName, book.getAuthor());
+        context.setAttribute("bookId", bookId);
     }
 
     private void setBookTitle(String bookTitle) {
@@ -108,8 +72,7 @@ public class AddToCatalog {
         String currentUrl = driver.getCurrentUrl();
         // Book id is the last in path
         int index = currentUrl.lastIndexOf('/');
-        String bookId = currentUrl.substring(index + 1);
-        return bookId;
+        return currentUrl.substring(index + 1);
     }
 
     private String getTitle() {
